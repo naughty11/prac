@@ -1,0 +1,44 @@
+//Write the program for selection sort using the fucntion template for int and for the float.
+
+
+#include <iostream>
+using namespace std;
+
+template <class T>
+void selection_sort(T a[], int size)
+{
+    int i, j, min;
+
+    for (i = 0; i < size; i++)
+    {
+        min = i;
+        for (j = i + 1; j < size; j++)
+        {
+            if (a[j] < a[min])
+            {
+                min = j;
+            }
+        }
+        T temp = a[i];
+        a[i] = a[min];
+        a[min] = temp;
+    }
+
+    cout << "The sorted order of array: ";
+    for (int k = 0; k < size; k++)
+    {
+        cout << a[k] << " ";
+    }
+    cout << endl;
+}
+
+int main()
+{
+    int arr1[5] = {2, 1, 4, 3, 9};
+    float arr2[3] = {3.2, 1.2, 6.7};
+
+    selection_sort(arr1, 5);
+    selection_sort(arr2, 3);
+
+    return 0;
+}

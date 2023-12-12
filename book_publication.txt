@@ -1,0 +1,104 @@
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+class Publication {
+protected:
+    string title;
+    float price;
+
+public:
+    // Default Constructor
+    Publication() : title(""), price(0.0) {}
+
+    // Parameterized Constructor
+    Publication(const string& t, float p) : title(t), price(p) {}
+
+    // Display publication information
+    virtual void display() const {
+        cout << "Title: " << title << "\n";
+        cout << "Price: $" << price << "\n";
+    }
+
+    // Virtual Destructor
+    virtual ~Publication() {}
+};
+
+class Book : public Publication {
+private:
+    int pageCount;
+
+public:
+    // Default Constructor
+    Book() : pageCount(0) {}
+
+    // Parameterized Constructor
+    Book(const string& t, float p, int pages) : Publication(t, p), pageCount(pages) {}
+
+    // Display book information
+    void display() const override {
+        Publication::display();
+        cout << "Page Count: " << pageCount << "\n";
+        cout << "--------------------------\n";
+    }
+};
+
+class Tape : public Publication {
+private:
+    float playingTime;
+
+public:
+    // Default Constructor
+    Tape() : playingTime(0.0) {}
+
+    // Parameterized Constructor
+    Tape(const string& t, float p, float time) : Publication(t, p), playingTime(time) {}
+
+    // Display tape information
+    void display() const override {
+        Publication::display();
+        cout << "Playing Time: " << playingTime << " minutes\n";
+        cout << "--------------------------\n";
+    }
+};
+
+int main() {
+    // Getting user input for book
+    string bookTitle;
+    float bookPrice;
+    int bookPages;
+
+    cout << "Enter book title: ";
+    getline(cin, bookTitle);
+    cout << "Enter book price: $";
+    cin >> bookPrice;
+    cout << "Enter page count: ";
+    cin >> bookPages;
+    cin.ignore(); // Clear newline from the input buffer
+
+    // Getting user input for tape
+    string tapeTitle;
+    float tapePrice;
+    float tapePlayingTime;
+
+    cout << "Enter tape title: ";
+    getline(cin, tapeTitle);
+    cout << "Enter tape price: $";
+    cin >> tapePrice;
+    cout << "Enter playing time (in minutes): ";
+    cin >> tapePlayingTime;
+
+    // Creating objects
+    Book book(bookTitle, bookPrice, bookPages);
+    Tape tape(tapeTitle, tapePrice, tapePlayingTime);
+
+    // Displaying information
+    cout << "\nBook Information:\n";
+    book.display();
+
+    cout << "Tape Information:\n";
+    tape.display();
+
+    return 0;
+}

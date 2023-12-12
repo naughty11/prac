@@ -1,0 +1,87 @@
+#include <iostream>
+#include <cstring>
+
+class Student {
+private:
+    char* name;
+    int rollNumber;
+    char* className;
+    char division;
+    char* dob;
+    char* bloodGroup;
+    char* contactAddress;
+    char* telephoneNumber;
+    char* drivingLicense;
+
+public:
+    // Default Constructor
+    Student() : name(nullptr), rollNumber(0), className(nullptr), division('\0'),
+                dob(nullptr), bloodGroup(nullptr), contactAddress(nullptr),
+                telephoneNumber(nullptr), drivingLicense(nullptr) {}
+
+    // Parameterized Constructor
+    Student(const char* n, int roll, const char* cName, char div,
+            const char* d, const char* bGroup, const char* cAddress,
+            const char* tNumber, const char* dLicense)
+        : rollNumber(roll), division(div) {
+        name = strdup(n);
+        className = strdup(cName);
+        dob = strdup(d);
+        bloodGroup = strdup(bGroup);
+        contactAddress = strdup(cAddress);
+        telephoneNumber = strdup(tNumber);
+        drivingLicense = strdup(dLicense);
+    }
+
+    // Copy Constructor
+    Student(const Student& other)
+        : rollNumber(other.rollNumber), division(other.division) {
+        name = strdup(other.name);
+        className = strdup(other.className);
+        dob = strdup(other.dob);
+        bloodGroup = strdup(other.bloodGroup);
+        contactAddress = strdup(other.contactAddress);
+        telephoneNumber = strdup(other.telephoneNumber);
+        drivingLicense = strdup(other.drivingLicense);
+    }
+
+    // Destructor
+    ~Student() {
+        delete[] name;
+        delete[] className;
+        delete[] dob;
+        delete[] bloodGroup;
+        delete[] contactAddress;
+        delete[] telephoneNumber;
+        delete[] drivingLicense;
+    }
+
+    // Display student information
+    void display() const {
+        std::cout << "Name: " << name << "\n";
+        std::cout << "Roll Number: " << rollNumber << "\n";
+        std::cout << "Class: " << className << "\n";
+        std::cout << "Division: " << division << "\n";
+        std::cout << "Date of Birth: " << dob << "\n";
+        std::cout << "Blood Group: " << bloodGroup << "\n";
+        std::cout << "Contact Address: " << contactAddress << "\n";
+        std::cout << "Telephone Number: " << telephoneNumber << "\n";
+        std::cout << "Driving License: " << drivingLicense << "\n";
+        std::cout << "--------------------------\n";
+    }
+};
+
+int main() {
+    // Creating student objects
+    Student student1("John Doe", 101, "12th", 'A', "01/01/2000", "O+",
+                     "123 Main St", "555-1234", "DL12345");
+
+    Student student2("Jane Doe", 102, "12th", 'B', "02/02/2000", "A-",
+                     "456 Oak St", "555-5678", "DL67890");
+
+    // Displaying student information
+    student1.display();
+    student2.display();
+
+    return 0;
+}

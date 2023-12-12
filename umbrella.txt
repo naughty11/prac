@@ -1,0 +1,57 @@
+#include<iostream>
+#include<graphics.h>
+#include<stdlib.h>
+
+int main()
+{
+    int gd = DETECT, gm;
+    int rhx, rhy, j, i;
+
+    initgraph(&gd, &gm, NULL);
+
+    for (i = 0; i < 500; i += 5)
+    {
+        line(5, 380, 650, 380);
+
+        if (i % 2 == 0)
+        {
+            line(25 + i, 380, 35 + i, 340);
+            line(45 + i, 380, 35 + i, 340);
+            line(35 + i, 310, 25 + i, 330);
+            delay(20);
+        }
+        else
+        {
+            line(35 + i, 380, 35 + i, 340);
+            line(35 + i, 310, 40 + i, 330);
+            delay(20);
+        }
+
+        line(35 + i, 340, 35 + i, 310);
+        circle(35 + i, 300, 10);
+        line(35 + i, 310, 50 + i, 330);
+        setcolor(LIGHTBLUE);
+        line(50 + i, 330, 46 + i, 280);
+        line(8 + i, 285, 96 + i, 269);
+        arc(50 + i, 270, 160, 360, 45);
+        arc(55 + i, 330, 0, 180, 5);
+
+        rhx = getmaxx();
+        rhy = getmaxy();
+       
+        // Draw raindrops
+        for (j = 0; j < 50; j++)
+        {
+            int x = rand() % rhx;
+            int y = rand() % (rhy - 50);
+            putpixel(x, y, WHITE);
+        }
+
+        delay(200);
+        cleardevice();
+    }
+
+    getch();
+    closegraph();
+    return 0;
+}

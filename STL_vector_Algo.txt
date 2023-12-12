@@ -1,0 +1,128 @@
+//Use the STL to insert , display , search , sort , delete ,print , comapare the item cost
+#include <iostream>
+#include <algorithm>
+#include <vector>
+
+using namespace std;
+
+class Item {
+public:
+    char name[50];
+    int quantity;
+    int cost;
+    int code;
+
+    bool operator==(const Item& i1) const {
+        return code == i1.code;
+    }
+
+    bool operator<(const Item& i1) const {
+        return cost < i1.cost;
+    }
+};
+
+vector<Item> o1;
+
+void print(const Item& i1);
+void display();
+void insert();
+void search();
+void dlt();
+bool compare(const Item& i1, const Item& i2);
+
+int main() {
+    int ch;
+    do {
+        cout << "*******MENU*******" << endl;
+        cout << "1.Insert" << endl;
+        cout << "2.Display" << endl;
+        cout << "3.Search" << endl;
+        cout << "4.Sort" << endl;
+        cout << "5.Delete" << endl;
+        cout << "6.Exit" << endl;
+        cout << "Enter your choice : ";
+        cin >> ch;
+
+        switch (ch) {
+            case 1:
+                insert();
+                break;
+            case 2:
+                display();
+                break;
+            case 3:
+                search();
+                break;
+            case 4:
+                sort(o1.begin(), o1.end(), compare);
+                cout << "\n\n Sorted on Cost" << endl;
+                display();
+                break;
+            case 5:
+                dlt();
+                break;
+            case 6:
+                exit(0);
+            default:
+                cout << "Invalid choice. Please try again." << endl;
+        }
+    } while (ch != 6);
+
+    return 0;
+}
+
+void insert() {
+    Item i1;
+    cout << "\n Enter item name: ";
+    cin >> i1.name;
+    cout << "\n Enter item quantity: ";
+    cin >> i1.quantity;
+    cout << "\n Enter item cost: ";
+    cin >> i1.cost;
+    cout << "\n Enter item code: ";
+    cin >> i1.code;
+    o1.push_back(i1);
+}
+
+void display() {
+    for_each(o1.begin(), o1.end(), print);
+}
+
+void print(const Item& i1) {
+    cout << "\n";
+    cout << "\n Item Name: " << i1.name;
+    cout << "\n Item Quantity: " << i1.quantity;
+    cout << "\n Item Cost: " << i1.cost;
+    cout << "\n Item Code: " << i1.code;
+}
+
+void search() {
+    vector<Item>::iterator p;
+    Item i1;
+    cout << "\n Enter the item code to be searched: ";
+    cin >> i1.code;
+    p = find(o1.begin(), o1.end(), i1);
+    if (p == o1.end())
+        cout << "\n Item not found." << endl;
+    else
+        cout << "\n Found." << endl;
+}
+
+void dlt() {
+    vector<Item>::iterator p;
+    Item i1;
+    cout << "\n Enter the code number to be deleted: ";
+    cin >> i1.code;
+    p = find(o1.begin(), o1.end(), i1);
+    if (p == o1.end())
+        cout << "Item not found." << endl;
+    else {
+        o1.erase(p);
+        cout << "\n Deleted." << endl;
+    }
+}
+
+bool compare(const Item& i1, const Item& i2) {
+    return i1.cost < i2.cost;
+}
+
