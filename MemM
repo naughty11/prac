@@ -1,0 +1,136 @@
+import java.util.Arrays;
+import java.util.Scanner;
+
+public class MemoryPlacement {
+    // Function to perform the First Fit allocation
+    static void firstFit(int[] blockSizes, int[] processSizes) {
+        System.out.println("\nFirst Fit:");
+        int[] allocation = new int[processSizes.length];
+        Arrays.fill(allocation, -1);
+
+        for (int i = 0; i < processSizes.length; i++) {
+            for (int j = 0; j < blockSizes.length; j++) {
+                if (blockSizes[j] >= processSizes[i]) {
+                    allocation[i] = j;
+                    blockSizes[j] -= processSizes[i];
+                    break;
+                }
+            }
+        }
+        printAllocation(allocation, processSizes);
+    }
+
+    // Function to perform the Best Fit allocation
+    static void bestFit(int[] blockSizes, int[] processSizes) {
+        System.out.println("\nBest Fit:");
+        int[] allocation = new int[processSizes.length];
+        Arrays.fill(allocation, -1);
+
+        for (int i = 0; i < processSizes.length; i++) {
+            int bestIdx = -1;
+            for (int j = 0; j < blockSizes.length; j++) {
+                if (blockSizes[j] >= processSizes[i]) {
+                    if (bestIdx == -1 || blockSizes[j] < blockSizes[bestIdx]) {
+                        bestIdx = j;
+                    }
+                }
+            }
+
+            if (bestIdx != -1) {
+                allocation[i] = bestIdx;
+                blockSizes[bestIdx] -= processSizes[i];
+            }
+        }
+        printAllocation(allocation, processSizes);
+    }
+
+    // Function to perform the Worst Fit allocation
+    static void worstFit(int[] blockSizes, int[] processSizes) {
+        System.out.println("\nWorst Fit:");
+        int[] allocation = new int[processSizes.length];
+        Arrays.fill(allocation, -1);
+
+        for (int i = 0; i < processSizes.length; i++) {
+            int worstIdx = -1;
+            for (int j = 0; j < blockSizes.length; j++) {
+                if (blockSizes[j] >= processSizes[i]) {
+                    if (worstIdx == -1 || blockSizes[j] > blockSizes[worstIdx]) {
+                        worstIdx = j;
+                    }
+                }
+            }
+
+            if (worstIdx != -1) {
+                allocation[i] = worstIdx;
+                blockSizes[worstIdx] -= processSizes[i];
+            }
+        }
+        printAllocation(allocation, processSizes);
+    }
+
+    // Function to perform the Next Fit allocation
+    static void nextFit(int[] blockSizes, int[] processSizes) {
+        System.out.println("\nNext Fit:");
+        int[] allocation = new int[processSizes.length];
+        Arrays.fill(allocation, -1);
+
+        int j = 0; // Start from the first block
+        for (int i = 0; i < processSizes.length; i++) {
+            int start = j;
+            while (true) {
+                if (blockSizes[j] >= processSizes[i]) {
+                    allocation[i] = j;
+                    blockSizes[j] -= processSizes[i];
+                    j = (j + 1) % blockSizes.length; // Move to the next block
+                    break;
+                }
+                j = (j + 1) % blockSizes.length;
+                if (j == start) { // If we've looped around, break
+                    break;
+                }
+            }
+        }
+        printAllocation(allocation, processSizes);
+    }
+
+    // Helper function to print the allocation result
+    static void printAllocation(int[] allocation, int[] processSizes) {
+        System.out.println("Process No.\tProcess Size\tBlock No.");
+        for (int i = 0; i < processSizes.length; i++) {
+            System.out.print(" " + (i + 1) + "\t\t" + processSizes[i] + "\t\t");
+            if (allocation[i] != -1) {
+                System.out.println(allocation[i] + 1);
+            } else {
+                System.out.println("Not Allocated");
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        System.out.print("Enter number of memory blocks: ");
+        int m = sc.nextInt();
+        int[] blockSizes = new int[m];
+        System.out.println("Enter block sizes:");
+        for (int i = 0; i < m; i++) {
+            blockSizes[i] = sc.nextInt();
+        }
+
+        System.out.print("Enter number of processes: ");
+        int n = sc.nextInt();
+        int[] processSizes = new int[n];
+        System.out.println("Enter process sizes:");
+        for (int i = 0; i < n; i++) {
+            processSizes[i] = sc.nextInt();
+        }
+
+        // Copy original block sizes for each method
+        firstFit(blockSizes.clone(), processSizes);
+        bestFit(blockSizes.clone(), processSizes);
+        worstFit(blockSizes.clone(), processSizes);
+        nextFit(blockSizes.clone(), processSizes);
+
+        sc.close();
+    }
+}
