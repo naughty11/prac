@@ -1,0 +1,92 @@
+import java.io.*;
+import java.util.*;
+
+public class MacroProcessor {
+    private static Map<String, Integer> mnt = new LinkedHashMap<>();
+    private static List<String> mdt = new ArrayList<>();
+    private static int mdtPointer = 0;
+
+    // Pass-I: Create MNT, MDT, and intermediate code file
+    public static void passI(String inputFile, String intermediateFile) throws IOException {
+        BufferedReader reader = new BufferedReader(new FileReader(inputFile));
+        BufferedWriter writer = new BufferedWriter(new FileWriter(intermediateFile));
+
+        String line;
+        boolean inMacro = false;
+        String macroName = "";
+
+        while ((line = reader.readLine()) != null) {
+            String[] tokens = line.trim().split("\\s+");
+
+            if (tokens[0].equalsIgnoreCase("MACRO")) {
+                inMacro = true;
+                macroName = tokens[1];
+                mnt.put(macroName, mdtPointer);
+            } else if (inMacro && tokens[0].equalsIgnoreCase("MEND")) {
+                mdt.add(line);
+                mdtPointer++;
+                inMacro = false;
+            } else if (inMacro) {
+                mdt.add(line);
+                mdtPointer++;
+            } else {
+                writer.write(line + "\n");
+            }
+        }
+
+        reader.close();
+        writer.close();
+
+        // Print MNT and MDT for debugging
+        System.out.println("Macro Name Table (MNT):");
+        mnt.forEach((name, pointer) -> System.out.println(name + " -> MDT Pointer: " + pointer));
+
+        System.out.println("\nMacro Definition Table (MDT):");
+        for (int i = 0; i < mdt.size(); i++) {
+            System.out.println(i + ": " + mdt.get(i));
+        }
+    }
+
+    // Pass-II: Expand macros using MNT and MDT
+    public static void passII(String intermediateFile, String outputFile) throws IOException {
+        BufferedReader reader = new BufferedReader(new FileReader(intermediateFile));
+        BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile));
+
+        String line;
+        while ((line = reader.readLine()) != null) {
+            String[] tokens = line.trim().split("\\s+");
+            if (mnt.containsKey(tokens[0])) {
+                // Macro invocation found; expand the macro
+                int mdtIndex = mnt.get(tokens[0]);
+                while (!mdt.get(mdtIndex).equalsIgnoreCase("MEND")) {
+                    writer.write(mdt.get(mdtIndex) + "\n");
+                    mdtIndex++;
+                }
+            } else {
+                writer.write(line + "\n");
+            }
+        }
+
+        reader.close();
+        writer.close();
+    }
+
+    public static void main(String[] args) {
+        try {
+            // Input and output file paths
+            String inputFile = "input.asm";
+            String intermediateFile = "intermediate.asm";
+            String outputFile = "output.asm";
+
+            // Pass-I: Create MNT, MDT, and intermediate code
+            passI(inputFile, intermediateFile);
+
+            // Pass-II: Expand macros and create the final output
+            passII(intermediateFile, outputFile);
+
+            System.out.println("\nMacro expansion complete. Check 'output.asm' for the result.");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
