@@ -1,0 +1,163 @@
+//for Round Robin
+
+import java.util.*;
+
+public class Main {
+    public static void main(String args[]) {
+        Scanner s = new Scanner(System.in);
+        
+        // Declaring variables
+        int wtime[], btime[], rtime[], num, quantum, total;
+        wtime = new int[10];
+        btime = new int[10];
+        rtime = new int[10];
+        
+        // Taking input for the number of processes
+        System.out.print("Enter number of processes (MAX 10): ");
+        num = s.nextInt();
+        
+        // Taking input for burst time for each process
+        System.out.print("Enter burst time: ");
+        for (int i = 0; i < num; i++) {
+            System.out.print("\nP[" + (i + 1) + "]: ");
+            btime[i] = s.nextInt();
+            rtime[i] = btime[i];  // Initially, remaining time is equal to burst time
+            wtime[i] = 0;          // Initialize waiting time to 0
+        }
+        
+        // Input for quantum time
+        System.out.print("\n\nEnter quantum: ");
+        quantum = s.nextInt();
+        
+        int rp = num;  // Remaining processes
+        int i = 0;
+        int time = 0;  // Total elapsed time
+        System.out.print("0");  // Start time
+        
+        // Round Robin scheduling
+        while (rp != 0) {
+            if (rtime[i] > quantum) {
+                rtime[i] = rtime[i] - quantum;
+                System.out.print(" | P[" + (i + 1) + "] | ");
+                time += quantum;
+                System.out.print(time);  // Display elapsed time after each execution
+            } else if (rtime[i] <= quantum && rtime[i] > 0) {
+                time += rtime[i];  // Process completes within the remaining quantum
+                rtime[i] = 0;
+                System.out.print(" | P[" + (i + 1) + "] | ");
+                rp--;  // Decrease the count of remaining processes
+                System.out.print(time);
+            }
+            i++;
+            if (i == num) {
+                i = 0;  // Reset index to start from the first process again
+            }
+        }
+    }
+}
+
+
+// FCFS and SJF(Shortes job first)
+import java.util.*;
+
+public class Main {
+    public static void main(String args[]) {
+        int wt[], proc[], tat[], bst[], n, i, j, total = 0;
+        Scanner sc = new Scanner(System.in);
+
+        System.out.println("Page scheduling MENU: ");
+        System.out.println(" 1. Using FCFS?");
+        System.out.println(" 2. Using SJF?");
+        System.out.print("Your Choice ==> ");
+        int x = sc.nextInt();
+
+        // Input number of processes
+        System.out.print("\nNo. of processes: ");
+        n = sc.nextInt();
+
+        proc = new int[n];  // Process IDs
+        wt = new int[n];    // Waiting times
+        bst = new int[n];   // Burst times
+        tat = new int[n];   // Turnaround times
+
+        switch (x) {
+            // FCFS Scheduling
+            case 1:
+                System.out.println("Enter CPU time: ");
+                for (i = 0; i < n; i++) {
+                    System.out.print(" Process[" + (i + 1) + "]: ");
+                    bst[i] = sc.nextInt();  // Burst time input
+                    proc[i] = i + 1;        // Process IDs
+                }
+
+                // FCFS waiting time calculation
+                wt[0] = 0;  // First process has 0 waiting time
+                for (i = 1; i < n; i++) {
+                    wt[i] = 0;
+                    for (j = 0; j < i; j++) {
+                        wt[i] += bst[j];  // Sum of burst times of all previous processes
+                    }
+                    total += wt[i];  // Total waiting time
+                }
+
+                // Printing results
+                System.out.println("\nProcess\t\tBT\tWT\tTAT");
+                System.out.println("-------------------------------------");
+                for (i = 0; i < n; i++) {
+                    tat[i] = wt[i] + bst[i];  // Turnaround time = Waiting time + Burst time
+                    System.out.println("Proc[" + proc[i] + "]\t\t" + bst[i] + "\t" + wt[i] + "\t" + tat[i]);
+                }
+                break;
+
+            // SJF Scheduling
+            case 2:
+                System.out.println("Enter CPU time: ");
+                for (i = 0; i < n; i++) {
+                    System.out.print(" Process[" + (i + 1) + "]: ");
+                    bst[i] = sc.nextInt();  // Burst time input
+                    proc[i] = i + 1;        // Process IDs
+                }
+
+                // SJF Sorting by burst time
+                for (i = 0; i < n; i++) {
+                    int pp = i;
+                    for (j = i + 1; j < n; j++) {
+                        if (bst[j] < bst[pp]) {
+                            pp = j;  // Find the shortest burst time
+                        }
+                    }
+                    // Swap burst times and process IDs to implement sorting
+                    int temp = bst[i];
+                    bst[i] = bst[pp];
+                    bst[pp] = temp;
+
+                    temp = proc[i];
+                    proc[i] = proc[pp];
+                    proc[pp] = temp;
+                }
+
+                // SJF waiting time calculation
+                wt[0] = 0;  // First process has 0 waiting time
+                for (i = 1; i < n; i++) {
+                    wt[i] = 0;
+                    for (j = 0; j < i; j++) {
+                        wt[i] += bst[j];  // Sum of burst times of all previous processes
+                    }
+                    total += wt[i];  // Total waiting time
+                }
+
+                // Printing results
+                System.out.println("\nProcess\t\tBT\tWT\tTAT");
+                System.out.println("-------------------------------------");
+                for (i = 0; i < n; i++) {
+                    tat[i] = wt[i] + bst[i];  // Turnaround time = Waiting time + Burst time
+                    System.out.println("Proc[" + proc[i] + "]\t\t" + bst[i] + "\t" + wt[i] + "\t" + tat[i]);
+                }
+                break;
+
+            default:
+                System.out.println("Invalid choice!");
+        }
+    }
+}
+
