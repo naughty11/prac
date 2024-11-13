@@ -1,0 +1,160 @@
+import java.util.*;
+
+class Process {
+    int pid; // Process ID
+    int arrivalTime;
+    int burstTime;
+    int priority;
+    int waitingTime;
+    int turnaroundTime;
+    int remainingTime; // For preemptive algorithms
+
+    public Process(int pid, int arrivalTime, int burstTime, int priority) {
+        this.pid = pid;
+        this.arrivalTime = arrivalTime;
+        this.burstTime = burstTime;
+        this.priority = priority;
+        this.remainingTime = burstTime;
+    }
+}
+
+public class CPUScheduling {
+    
+    // First Come First Serve (FCFS)
+    public static void fcfs(List<Process> processes) {
+        System.out.println("FCFS Scheduling:");
+        processes.sort(Comparator.comparingInt(p -> p.arrivalTime));
+        int currentTime = 0;
+
+        for (Process p : processes) {
+            if (currentTime < p.arrivalTime) {
+                currentTime = p.arrivalTime;
+            }
+            p.waitingTime = currentTime - p.arrivalTime;
+            p.turnaroundTime = p.waitingTime + p.burstTime;
+            currentTime += p.burstTime;
+
+            System.out.println("Process " + p.pid + ": Waiting Time = " + p.waitingTime + ", Turnaround Time = " + p.turnaroundTime);
+        }
+        System.out.println();
+    }
+
+    // Shortest Job First (Preemptive)
+    public static void sjfPreemptive(List<Process> processes) {
+        System.out.println("SJF Preemptive Scheduling:");
+        int currentTime = 0;
+        int completed = 0;
+        int n = processes.size();
+        Process currentProcess = null;
+
+        while (completed < n) {
+            currentProcess = null;
+            for (Process p : processes) {
+                if (p.arrivalTime <= currentTime && p.remainingTime > 0) {
+                    if (currentProcess == null || p.remainingTime < currentProcess.remainingTime) {
+                        currentProcess = p;
+                    }
+                }
+            }
+
+            if (currentProcess != null) {
+                currentProcess.remainingTime--;
+                currentTime++;
+
+                if (currentProcess.remainingTime == 0) {
+                    completed++;
+                    currentProcess.turnaroundTime = currentTime - currentProcess.arrivalTime;
+                    currentProcess.waitingTime = currentProcess.turnaroundTime - currentProcess.burstTime;
+                    System.out.println("Process " + currentProcess.pid + ": Waiting Time = " + currentProcess.waitingTime + ", Turnaround Time = " + currentProcess.turnaroundTime);
+                }
+            } else {
+                currentTime++;
+            }
+        }
+        System.out.println();
+    }
+
+    // Priority Scheduling (Non-Preemptive)
+    public static void priorityScheduling(List<Process> processes) {
+        System.out.println("Priority Scheduling (Non-Preemptive):");
+        processes.sort(Comparator.comparingInt(p -> p.arrivalTime));
+        int currentTime = 0;
+
+        while (!processes.isEmpty()) {
+            Process nextProcess = processes.stream()
+                    .filter(p -> p.arrivalTime <= currentTime)
+                    .min(Comparator.comparingInt(p -> p.priority))
+                    .orElse(null);
+
+            if (nextProcess != null) {
+                processes.remove(nextProcess);
+                if (currentTime < nextProcess.arrivalTime) {
+                    currentTime = nextProcess.arrivalTime;
+                }
+                nextProcess.waitingTime = currentTime - nextProcess.arrivalTime;
+                nextProcess.turnaroundTime = nextProcess.waitingTime + nextProcess.burstTime;
+                currentTime += nextProcess.burstTime;
+
+                System.out.println("Process " + nextProcess.pid + ": Waiting Time = " + nextProcess.waitingTime + ", Turnaround Time = " + nextProcess.turnaroundTime);
+            } else {
+                currentTime++;
+            }
+        }
+        System.out.println();
+    }
+
+    // Round Robin (Preemptive)
+    public static void roundRobin(List<Process> processes, int quantum) {
+        System.out.println("Round Robin Scheduling (Quantum = " + quantum + "):");
+        Queue<Process> queue = new LinkedList<>();
+        int currentTime = 0;
+        int n = processes.size();
+        int completed = 0;
+
+        processes.sort(Comparator.comparingInt(p -> p.arrivalTime));
+        int index = 0;
+        while (completed < n) {
+            while (index < n && processes.get(index).arrivalTime <= currentTime) {
+                queue.add(processes.get(index));
+                index++;
+            }
+
+            if (queue.isEmpty()) {
+                currentTime++;
+            } else {
+                Process currentProcess = queue.poll();
+                int timeSlice = Math.min(currentProcess.remainingTime, quantum);
+                currentProcess.remainingTime -= timeSlice;
+                currentTime += timeSlice;
+
+                if (currentProcess.remainingTime == 0) {
+                    completed++;
+                    currentProcess.turnaroundTime = currentTime - currentProcess.arrivalTime;
+                    currentProcess.waitingTime = currentProcess.turnaroundTime - currentProcess.burstTime;
+                    System.out.println("Process " + currentProcess.pid + ": Waiting Time = " + currentProcess.waitingTime + ", Turnaround Time = " + currentProcess.turnaroundTime);
+                } else {
+                    while (index < n && processes.get(index).arrivalTime <= currentTime) {
+                        queue.add(processes.get(index));
+                        index++;
+                    }
+                    queue.add(currentProcess);
+                }
+            }
+        }
+        System.out.println();
+    }
+
+    public static void main(String[] args) {
+        List<Process> processes = new ArrayList<>();
+        processes.add(new Process(1, 0, 8, 2));
+        processes.add(new Process(2, 1, 4, 1));
+        processes.add(new Process(3, 2, 9, 3));
+        processes.add(new Process(4, 3, 5, 2));
+
+        // Create deep copies for each algorithm as needed
+        fcfs(new ArrayList<>(processes));
+        sjfPreemptive(new ArrayList<>(processes));
+        priorityScheduling(new ArrayList<>(processes));
+        roundRobin(new ArrayList<>(processes), 3);
+    }
+}
